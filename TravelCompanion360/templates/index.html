@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Travel Companion - Your Ultimate Travel Partner{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1 class="fade-in">Discover the World with Travel Companion</h1>
+        <p class="fade-in">Find budget-friendly hotels, rent cars, and explore new destinations with our smart travel recommendations.</p>
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('hotels') }}" class="btn-hero fade-in">Find Hotels</a>
+        {% else %}
+            <a href="{{ url_for('register') }}" class="btn-hero fade-in">Get Started</a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Why Choose Travel Companion?</h2>
+        
+        <div class="features">
+            <div class="feature fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-hotel"></i>
+                </div>
+                <h3 class="feature-title">Smart Hotel Recommendations</h3>
+                <p>Get personalized budget hotel recommendations powered by ChatGPT.</p>
+            </div>
+            
+            <div class="feature fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="feature-title">AI Travel Assistant</h3>
+                <p>Chat with our AI assistant for personalized travel advice and recommendations.</p>
+            </div>
+            
+            <div class="feature fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h3 class="feature-title">Interactive Maps</h3>
+                <p>Explore destinations with interactive map integration.</p>
+            </div>
+            
+            <div class="feature fade-in">
+                <div class="feature-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <h3 class="feature-title">Car Rentals</h3>
+                <p>Book rental cars easily for your trips.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section" style="background-color: #f8f9fa;">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        
+        <div class="row">
+            <div class="col col-md-6 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-number">01</span>
+                        <h3 class="card-title">Create an Account</h3>
+                        <p class="card-text">Sign up with your email to access all features and get personalized recommendations.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col col-md-6 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-number">02</span>
+                        <h3 class="card-title">Search Destinations</h3>
+                        <p class="card-text">Explore destinations on our interactive map or search for your preferred location.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col col-md-6 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-number">03</span>
+                        <h3 class="card-title">Get Hotel Recommendations</h3>
+                        <p class="card-text">Receive AI-powered hotel suggestions that match your budget and preferences.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col col-md-6 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-number">04</span>
+                        <h3 class="card-title">Book and Enjoy</h3>
+                        <p class="card-text">Book your hotel, rent a car, and enjoy your perfectly planned trip.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI Assistant Promo -->
+<section class="section" style="background-color: rgba(25, 118, 210, 0.05);">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="section-title">Meet Your AI Travel Assistant</h2>
+                <p class="mb-4">Get personalized travel advice, destination recommendations, travel tips and more with our intelligent AI assistant powered by ChatGPT.</p>
+                <ul class="mb-4">
+                    <li>Ask about the best times to visit destinations</li>
+                    <li>Get packing suggestions for your trip</li>
+                    <li>Learn about local customs and cultural tips</li>
+                    <li>Find budget-friendly travel options</li>
+                </ul>
+                <a href="{{ url_for('assistant') }}" class="btn btn-primary">Chat with AI Assistant</a>
+            </div>
+            <div class="col-md-6 text-center">
+                <div style="background-color: #fff; border-radius: 10px; padding: 25px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);">
+                    <div style="font-size: 4rem; color: var(--primary-color); margin-bottom: 15px;">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div style="background-color: #f8f9fa; border-radius: 8px; padding: 15px; margin-bottom: 15px; text-align: left;">
+                        <p style="margin-bottom: 0;">Hello! I'm your AI travel assistant. How can I help plan your next adventure?</p>
+                    </div>
+                    <div style="display: flex;">
+                        <input type="text" class="form-control" placeholder="Ask me anything about travel..." disabled>
+                        <a href="{{ url_for('assistant') }}" class="btn btn-primary ms-2">
+                            <i class="fas fa-paper-plane"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Destinations -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Popular Destinations</h2>
+        
+        <div class="row">
+            <div class="col col-md-4 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-img" style="background: url('https://images.unsplash.com/photo-1499856871958-5b9357976b82?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60') center/cover no-repeat;"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">Paris, France</h3>
+                        <p class="card-text">The city of love and lights, with iconic landmarks and charming streets.</p>
+                        <a href="{{ url_for('hotels') }}?destination=Paris" class="btn btn-primary">Find Hotels</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col col-md-4 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-img" style="background: url('https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60') center/cover no-repeat;"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">Tokyo, Japan</h3>
+                        <p class="card-text">A fascinating blend of ultra-modern and traditional, bustling with energy.</p>
+                        <a href="{{ url_for('hotels') }}?destination=Tokyo" class="btn btn-primary">Find Hotels</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col col-md-4 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-img" style="background: url('https://images.unsplash.com/photo-1538970272646-f61fabb3a8a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60') center/cover no-repeat;"></div>
+                    <div class="card-content">
+                        <h3 class="card-title">New York City, USA</h3>
+                        <p class="card-text">The Big Apple offers endless entertainment, culture, and excitement.</p>
+                        <a href="{{ url_for('hotels') }}?destination=New York" class="btn btn-primary">Find Hotels</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('destinations') }}" class="btn btn-secondary">Explore All Destinations</a>
+        </div>
+    </div>
+</section>
+
+{% if not current_user.is_authenticated %}
+<!-- Call to Action -->
+<section class="section" style="background-color: var(--primary-color); color: white;">
+    <div class="container text-center">
+        <h2 style="color: white;">Ready to Start Your Journey?</h2>
+        <p class="mb-4">Join Travel Companion today and discover the easiest way to plan your trips.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-hero">Sign Up Now</a>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

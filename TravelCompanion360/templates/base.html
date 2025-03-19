@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Travel Companion{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+        
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-map">
+                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                    <line x1="8" y1="2" x2="8" y2="18"></line>
+                    <line x1="16" y1="6" x2="16" y2="22"></line>
+                </svg>
+                <a href="{{ url_for('index') }}">Travel Companion</a>
+            </div>
+            
+            <button class="navbar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="navbar-menu">
+                <div class="navbar-item">
+                    <a href="{{ url_for('index') }}" class="navbar-link {% if request.path == '/' %}active{% endif %}">Home</a>
+                </div>
+                <div class="navbar-item">
+                    <a href="{{ url_for('destinations') }}" class="navbar-link {% if request.path == '/destinations' %}active{% endif %}">Destinations</a>
+                </div>
+                <div class="navbar-item">
+                    <a href="{{ url_for('hotels') }}" class="navbar-link {% if request.path == '/hotels' %}active{% endif %}">Hotels</a>
+                </div>
+                <div class="navbar-item">
+                    <a href="{{ url_for('car_rentals') }}" class="navbar-link {% if request.path == '/car_rentals' %}active{% endif %}">Car Rentals</a>
+                </div>
+                <div class="navbar-item">
+                    <a href="{{ url_for('assistant') }}" class="navbar-link {% if request.path == '/assistant' %}active{% endif %}">
+                        <i class="fas fa-robot me-1"></i> AI Assistant
+                    </a>
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                    <div class="navbar-item">
+                        <a href="{{ url_for('profile') }}" class="navbar-link {% if request.path == '/profile' %}active{% endif %}">My Profile</a>
+                    </div>
+                    <div class="navbar-item">
+                        <a href="{{ url_for('logout') }}" class="navbar-link">Logout</a>
+                    </div>
+                {% else %}
+                    <div class="navbar-item">
+                        <a href="{{ url_for('login') }}" class="navbar-link {% if request.path == '/login' %}active{% endif %}">Login</a>
+                    </div>
+                    <div class="navbar-item">
+                        <a href="{{ url_for('register') }}" class="navbar-link {% if request.path == '/register' %}active{% endif %}">Register</a>
+                    </div>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Content -->
+    <div class="content-wrapper">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mt-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div>
+                    <p>&copy; {{ current_year }} Travel Companion. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+        
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

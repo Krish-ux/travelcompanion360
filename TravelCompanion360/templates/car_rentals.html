@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Car Rentals - Travel Companion{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Rent a Car for Your Trip</h1>
+        
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="form-container fade-in">
+                    <h3 class="mb-3">Car Rental Form</h3>
+                    
+                    <form method="post" action="{{ url_for('car_rentals') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="form-group">
+                            <label for="location" class="form-label">Pickup Location</label>
+                            {{ form.location(class="form-control", id="location", placeholder="Enter pickup location", value=request.args.get('location', '')) }}
+                            {% for error in form.location.errors %}
+                                <div class="form-text text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Car Type</label>
+                            {{ form.car_type(style="display:none;", id="car_type") }}
+                            
+                            <div class="car-types">
+                                <div class="car-type active" data-value="economy">
+                                    <div class="car-type-icon">
+                                        <i class="fas fa-car"></i>
+                                    </div>
+                                    <div class="car-type-name">Economy</div>
+                                    <div class="car-type-price">$35/day</div>
+                                </div>
+                                
+                                <div class="car-type" data-value="compact">
+                                    <div class="car-type-icon">
+                                        <i class="fas fa-car-side"></i>
+                                    </div>
+                                    <div class="car-type-name">Compact</div>
+                                    <div class="car-type-price">$45/day</div>
+                                </div>
+                                
+                                <div class="car-type" data-value="midsize">
+                                    <div class="car-type-icon">
+                                        <i class="fas fa-car-alt"></i>
+                                    </div>
+                                    <div class="car-type-name">Midsize</div>
+                                    <div class="car-type-price">$60/day</div>
+                                </div>
+                                
+                                <div class="car-type" data-value="suv">
+                                    <div class="car-type-icon">
+                                        <i class="fas fa-truck"></i>
+                                    </div>
+                                    <div class="car-type-name">SUV</div>
+                                    <div class="car-type-price">$80/day</div>
+                                </div>
+                                
+                                <div class="car-type" data-value="luxury">
+                                    <div class="car-type-icon">
+                                        <i class="fas fa-car-side"></i>
+                                    </div>
+                                    <div class="car-type-name">Luxury</div>
+                                    <div class="car-type-price">$120/day</div>
+                                </div>
+                            </div>
+                            {% for error in form.car_type.errors %}
+                                <div class="form-text text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="pickup_date" class="form-label">Pickup Date</label>
+                                    {{ form.pickup_date(class="form-control", id="pickup_date", type="date") }}
+                                    {% for error in form.pickup_date.errors %}
+                                        <div class="form-text text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="return_date" class="form-label">Return Date</label>
+                                    {{ form.return_date(class="form-control", id="return_date", type="date") }}
+                                    {% for error in form.return_date.errors %}
+                                        <div class="form-text text-danger">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            {{ form.submit(class="btn btn-primary btn-block") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-sm-12">
+                <div class="fade-in">
+                    <h3 class="mb-3">Why Rent With Us?</h3>
+                    
+                    <div class="card mb-4">
+                        <div class="card-content">
+                            <h4><i class="fas fa-thumbs-up text-primary me-2"></i> Convenience</h4>
+                            <p>Book your rental car alongside your hotel for a seamless travel experience.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-content">
+                            <h4><i class="fas fa-dollar-sign text-primary me-2"></i> Best Rates</h4>
+                            <p>We partner with top rental companies to offer you competitive prices.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-content">
+                            <h4><i class="fas fa-car text-primary me-2"></i> Variety of Options</h4>
+                            <p>Choose from economy cars to luxury vehicles to match your needs.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-content">
+                            <h4><i class="fas fa-map-marked-alt text-primary me-2"></i> Flexible Pickup</h4>
+                            <p>Multiple pickup locations available at airports, city centers, and hotels.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" style="background-color: #f8f9fa;">
+    <div class="container">
+        <h2 class="section-title">Find Car Rental Locations</h2>
+        
+        <div class="map-container" id="map"></div>
+        
+        <div class="mt-3">
+            <form id="map-search-form" class="mb-3">
+                <div class="input-group">
+                    <input type="text" id="map-search" class="form-control" placeholder="Search for a location">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+            
+            <button id="find-nearby-car-rentals" class="btn btn-primary">
+                <i class="fas fa-car me-1"></i> Show Car Rental Locations Nearby
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Car Rental Tips</h2>
+        
+        <div class="row">
+            <div class="col-md-4 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title">Book in Advance</h3>
+                        <p class="card-text">Reserve your car early to get the best rates and ensure availability, especially during peak travel seasons.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title">Check Insurance</h3>
+                        <p class="card-text">Understand what your current insurance covers before purchasing additional coverage from the rental company.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-sm-12 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title">Inspect Before Driving</h3>
+                        <p class="card-text">Always check the car for existing damage and document it before driving off the lot.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script>
+<script src="{{ url_for('static', filename='js/maps.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Login to Travel Companion{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="form-container fade-in">
+            <h2 class="text-center">Login to Your Account</h2>
+            <p class="text-center mb-4">Enter your credentials to access your account.</p>
+            
+            <form method="post" action="{{ url_for('login') }}">
+                {{ form.hidden_tag() }}
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    {{ form.email(class="form-control", id="email", placeholder="Enter your email") }}
+                    {% for error in form.email.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <div class="position-relative">
+                        {{ form.password(class="form-control", id="password", placeholder="Enter your password") }}
+                        <span class="password-toggle position-absolute top-50 end-0 translate-middle-y pe-3" style="cursor: pointer;">
+                            <i class="fa fa-eye"></i>
+                        </span>
+                    </div>
+                    {% for error in form.password.errors %}
+                        <div class="form-text text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-check mb-3">
+                    {{ form.remember_me(class="form-check-input", id="remember_me") }}
+                    <label class="form-check-label" for="remember_me">Remember me</label>
+                </div>
+                
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-primary btn-block") }}
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p>Don't have an account? <a href="{{ url_for('register') }}">Register now</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

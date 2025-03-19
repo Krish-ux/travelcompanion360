@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Explore Destinations - Travel Companion{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Explore Destinations</h1>
+        
+        <div class="mb-4">
+            <form id="map-search-form">
+                <div class="input-group">
+                    <input type="text" id="map-search" class="form-control" placeholder="Search for a destination">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="map-container fade-in" id="map" data-destinations="{{ destinations|tojson }}"></div>
+        
+        <div class="map-controls">
+            <button id="toggle-map-view" class="btn btn-secondary mb-2">
+                <i class="fas fa-globe me-1"></i> Toggle Map View
+            </button>
+            <p class="small text-muted">Using OpenStreetMap via Leaflet</p>
+        </div>
+        
+        <div class="text-center mt-3 mb-5">
+            <p class="text-muted">Click on markers to see destination details and find hotels</p>
+        </div>
+        
+        <h2 class="section-title">Popular Destinations</h2>
+        
+        <div class="row">
+            {% for destination in destinations %}
+                <div class="col-md-4 col-sm-12 mb-4 fade-in">
+                    <div class="card">
+                        <div class="card-img" style="height: 200px; background: url('https://source.unsplash.com/500x300/?{{ destination.name|urlencode }},{{ destination.country|urlencode }}') center/cover no-repeat;"></div>
+                        <div class="card-content">
+                            <h3 class="card-title">{{ destination.name }}</h3>
+                            <p class="card-text">{{ destination.country }}</p>
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ url_for('hotels') }}?destination={{ destination.name }}" class="btn btn-primary">Find Hotels</a>
+                                <a href="#" class="btn btn-secondary destination-map-link" data-lat="{{ destination.lat }}" data-lng="{{ destination.lng }}">View on Map</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Travel Inspiration Section -->
+<section class="section" style="background-color: #f8f9fa;">
+    <div class="container">
+        <h2 class="section-title">Travel Inspiration</h2>
+        
+        <div class="row">
+            <div class="col-md-6 col-sm-12 mb-4 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title">Beach Getaways</h3>
+                        <p class="card-text">Discover pristine beaches and crystal-clear waters for your perfect vacation.</p>
+                        <div class="card-img" style="height: 200px; background: url('https://source.unsplash.com/500x300/?beach,tropical') center/cover no-repeat; margin: 15px 0;"></div>
+                        <a href="{{ url_for('hotels') }}?destination=Maldives" class="btn btn-primary">Explore Beaches</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-sm-12 mb-4 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title">City Adventures</h3>
+                        <p class="card-text">Experience the culture, cuisine, and vibrant nightlife of the world's best cities.</p>
+                        <div class="card-img" style="height: 200px; background: url('https://source.unsplash.com/500x300/?city,skyline') center/cover no-repeat; margin: 15px 0;"></div>
+                        <a href="{{ url_for('hotels') }}?destination=Barcelona" class="btn btn-primary">Explore Cities</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-sm-12 mb-4 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title">Mountain Retreats</h3>
+                        <p class="card-text">Find peace and adventure in breathtaking mountain landscapes around the world.</p>
+                        <div class="card-img" style="height: 200px; background: url('https://source.unsplash.com/500x300/?mountains,alps') center/cover no-repeat; margin: 15px 0;"></div>
+                        <a href="{{ url_for('hotels') }}?destination=Swiss Alps" class="btn btn-primary">Explore Mountains</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-sm-12 mb-4 fade-in">
+                <div class="card">
+                    <div class="card-content">
+                        <h3 class="card-title">Cultural Expeditions</h3>
+                        <p class="card-text">Immerse yourself in rich traditions, history, and heritage of fascinating cultures.</p>
+                        <div class="card-img" style="height: 200px; background: url('https://source.unsplash.com/500x300/?temple,culture') center/cover no-repeat; margin: 15px 0;"></div>
+                        <a href="{{ url_for('hotels') }}?destination=Kyoto" class="btn btn-primary">Explore Culture</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Google Maps option (commented out) -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script> -->
+<!-- <script src="{{ url_for('static', filename='js/maps.js') }}"></script> -->
+
+<!-- Leaflet Maps option (active) -->
+<script src="{{ url_for('static', filename='js/leaflet_maps.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pass destinations data directly to JavaScript
+        window.sampleDestinations = {{ destinations|tojson }};
+        
+        // Initialize Leaflet map instead of Google Maps
+        initLeafletMap();
+        
+        // Initialize toggle map view button
+        const toggleMapBtn = document.getElementById('toggle-map-view');
+        if (toggleMapBtn) {
+            toggleMapBtn.addEventListener('click', function() {
+                const mapView = document.getElementById('map');
+                if (mapView.style.display === 'none') {
+                    mapView.style.display = 'block';
+                    // Refresh the map since it may not render correctly when hidden
+                    if (window.map) {
+                        window.map.invalidateSize();
+                    }
+                } else {
+                    mapView.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+<script>
+    // Add click handlers for "View on Map" links
+    document.addEventListener('DOMContentLoaded', function() {
+        const mapLinks = document.querySelectorAll('.destination-map-link');
+        
+        mapLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const lat = parseFloat(this.getAttribute('data-lat'));
+                const lng = parseFloat(this.getAttribute('data-lng'));
+                
+                if (window.map && !isNaN(lat) && !isNaN(lng)) {
+                    // Center map on destination
+                    // For Leaflet map
+                    window.map.setView([lat, lng], 12);
+                    
+                    // Scroll to map
+                    document.getElementById('map').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

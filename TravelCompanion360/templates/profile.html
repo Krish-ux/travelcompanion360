@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Travel Companion{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="profile-header fade-in">
+            <div class="profile-avatar">
+                {{ current_user.username[0]|upper }}
+            </div>
+            
+            <div class="profile-details">
+                <h2>{{ current_user.username }}</h2>
+                <div class="profile-email">{{ current_user.email }}</div>
+                
+                <div class="profile-stats">
+                    <div class="stat">
+                        <div class="stat-value">{{ current_user.bookings|selectattr('booking_type', 'equalto', 'hotel')|list|length }}</div>
+                        <div class="stat-label">Hotels Booked</div>
+                    </div>
+                    
+                    <div class="stat">
+                        <div class="stat-value">{{ current_user.bookings|selectattr('booking_type', 'equalto', 'car')|list|length }}</div>
+                        <div class="stat-label">Cars Rented</div>
+                    </div>
+                    
+                    <div class="stat">
+                        <div class="stat-value">{{ current_user.created_at.strftime('%Y-%m-%d') }}</div>
+                        <div class="stat-label">Member Since</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="booking-history fade-in">
+            <h3 class="mb-4">Booking History</h3>
+            
+            {% if current_user.bookings %}
+                {% for booking in current_user.bookings|sort(attribute='booking_date', reverse=true) %}
+                    <div class="booking-item">
+                        <div class="booking-item-header">
+                            <div>
+                                <span class="booking-type booking-type-{{ booking.booking_type }}">
+                                    {% if booking.booking_type == 'hotel' %}
+                                        <i class="fas fa-hotel me-1"></i> Hotel
+                                    {% elif booking.booking_type == 'car' %}
+                                        <i class="fas fa-car me-1"></i> Car Rental
+                                    {% endif %}
+                                </span>
+                                
+                                <span class="booking-name">
+                                    {% if booking.booking_type == 'hotel' and booking.hotel %}
+                                        {{ booking.hotel.name }}
+                                    {% elif booking.booking_type == 'car' and booking.car_rental %}
+                                        {{ booking.car_rental.car_type|title }} Car
+                                    {% else %}
+                                        Booking #{{ booking.id }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="booking-date">
+                                {{ booking.booking_date.strftime('%B %d, %Y') }}
+                            </div>
+                        </div>
+                        
+                        <div class="booking-details">
+                            {% if booking.booking_type == 'hotel' and booking.hotel %}
+                                <div>{{ booking.hotel.location }}</div>
+                                <div>${{ booking.hotel.price_per_night }} per night</div>
+                                {% if booking.check_in_date and booking.check_out_date %}
+                                    <div class="mt-2">
+                                        <strong>Check-in:</strong> {{ booking.check_in_date.strftime('%B %d, %Y') }}
+                                        <strong class="ms-3">Check-out:</strong> {{ booking.check_out_date.strftime('%B %d, %Y') }}
+                                    </div>
+                                    <div class="mt-1">
+                                        <strong>Duration:</strong> {{ (booking.check_out_date - booking.check_in_date).days }} night(s)
+                                    </div>
+                                {% endif %}
+                                <div class="mt-2">
+                                    <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-info{% endif %}">
+                                        {{ booking.status|title }}
+                                    </span>
+                                </div>
+                            {% elif booking.booking_type == 'car' and booking.car_rental %}
+                                <div>Pickup: {{ booking.car_rental.location }}</div>
+                                <div>{{ booking.car_rental.pickup_date.strftime('%B %d, %Y') }} to {{ booking.car_rental.return_date.strftime('%B %d, %Y') }}</div>
+                                <div class="mt-1">
+                                    <strong>Duration:</strong> {{ (booking.car_rental.return_date - booking.car_rental.pickup_date).days }} day(s)
+                                </div>
+                                <div class="mt-2">
+                                    <span class="badge {% if booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-info{% endif %}">
+                                        {{ booking.status|title }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="mt-3">
+                                {% if booking.status == 'confirmed' %}
+                                    <form method="post" action="{{ url_for('cancel_booking', booking_id=booking.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times-circle me-1"></i> Cancel Booking
+                                        </button>
+                                    </form>
+                                {% endif %}
+                                
+                                {% if booking.booking_type == 'hotel' and booking.hotel %}
+                                    <a href="{{ url_for('hotel_availability', hotel_id=booking.hotel.id) }}" class="btn btn-sm btn-info ms-2">
+                                        <i class="fas fa-calendar-check me-1"></i> View Availability
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-4">
+                    <div style="font-size: 3rem; color: var(--primary-color);">
+                        <i class="fas fa-suitcase"></i>
+                    </div>
+                    <h4 class="mt-3">No Bookings Yet</h4>
+                    <p class="text-muted">Start planning your trip by booking hotels or renting cars.</p>
+                    <div class="mt-3">
+                        <a href="{{ url_for('hotels') }}" class="btn btn-primary me-2">Find Hotels</a>
+                        <a href="{{ url_for('car_rentals') }}" class="btn btn-secondary">Rent a Car</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

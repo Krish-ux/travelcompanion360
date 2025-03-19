@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - Travel Companion{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container text-center">
+        <div style="font-size: 5rem; color: var(--secondary-color);">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        
+        <h1 class="mt-4">500 - Server Error</h1>
+        <p class="mb-4">Oops! Something went wrong on our end. Our travel experts are working to fix it.</p>
+        
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Home</a>
+    </div>
+</section>
+{% endblock %}

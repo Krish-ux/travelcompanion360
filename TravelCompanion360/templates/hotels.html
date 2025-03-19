@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Find Hotels - Travel Companion{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Find Budget-Friendly Hotels</h1>
+        
+        <div class="row">
+            <div class="col-md-4 col-sm-12">
+                <div class="form-container fade-in">
+                    <h3 class="mb-3">Search Hotels</h3>
+                    <form method="post" action="{{ url_for('hotels') }}" id="hotel-search-form">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="form-group mb-3">
+                            <label for="destination" class="form-label">Destination</label>
+                            {{ form.destination(class="form-control", id="destination", placeholder="Enter city or location") }}
+                            {% for error in form.destination.errors %}
+                                <div class="form-text text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="budget" class="form-label">Budget per night ($)</label>
+                            {{ form.budget(class="form-control", id="budget", placeholder="Enter maximum budget") }}
+                            {% for error in form.budget.errors %}
+                                <div class="form-text text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="check_in_date" class="form-label">Check-in Date</label>
+                            {{ form.check_in_date(class="form-control", id="check_in_date") }}
+                            {% for error in form.check_in_date.errors %}
+                                <div class="form-text text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <label for="check_out_date" class="form-label">Check-out Date</label>
+                            {{ form.check_out_date(class="form-control", id="check_out_date") }}
+                            {% for error in form.check_out_date.errors %}
+                                <div class="form-text text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form.submit(class="btn btn-primary btn-block") }}
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4">
+                        <h4>Why use our recommendations?</h4>
+                        <ul>
+                            <li>AI-powered selections tailored to your budget</li>
+                            <li>Discover hidden gems and local favorites</li>
+                            <li>Get insights on amenities and location</li>
+                            <li>Save time researching options</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8 col-sm-12">
+                {% if recommendations %}
+                    <div class="hotel-recommendations fade-in">
+                        <h3 class="mb-3">Recommended Hotels</h3>
+                        
+                        {% for hotel in recommendations %}
+                            <div class="hotel-card">
+                                <div class="hotel-content">
+                                    <div class="hotel-header">
+                                        <div>
+                                            <h4 class="hotel-name">{{ hotel.name }}</h4>
+                                            <div class="hotel-location">
+                                                <i class="fas fa-map-marker-alt me-1"></i> {{ hotel.location }}
+                                            </div>
+                                        </div>
+                                        <div class="hotel-price">${{ hotel.price }}</div>
+                                    </div>
+                                    
+                                    <div class="hotel-rating">
+                                        <div class="stars">
+                                            {% for i in range(5) %}
+                                                {% if i < hotel.rating|int %}
+                                                    <i class="fas fa-star"></i>
+                                                {% elif (hotel.rating - i) >= 0.5 %}
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <span>{{ hotel.rating }} / 5</span>
+                                    </div>
+                                    
+                                    {% if hotel.features %}
+                                        <div class="hotel-features">
+                                            {% for feature in hotel.features %}
+                                                <span class="hotel-feature">{{ feature }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if hotel.description %}
+                                        <div class="hotel-description">
+                                            {{ hotel.description }}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="hotel-actions">
+                                        <form method="post" action="{{ url_for('book_hotel', hotel_id=hotel.id) }}" class="hotel-booking-form" data-hotel-id="{{ hotel.id }}" data-hotel-name="{{ hotel.name }}">
+                                            <input type="hidden" name="check_in_date" value="{{ form.check_in_date.data.strftime('%Y-%m-%d') if form.check_in_date.data else '' }}">
+                                            <input type="hidden" name="check_out_date" value="{{ form.check_out_date.data.strftime('%Y-%m-%d') if form.check_out_date.data else '' }}">
+                                            <button type="submit" class="btn btn-primary">Book Now</button>
+                                        </form>
+                                        
+                                        <a href="{{ url_for('hotel_availability', hotel_id=hotel.id) }}" class="btn btn-info me-2">
+                                            <i class="fas fa-calendar-check me-1"></i> Check Availability
+                                        </a>
+                                        
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ hotel.name|urlencode }}+{{ hotel.location|urlencode }}" target="_blank" class="btn btn-secondary">
+                                            <i class="fas fa-map-marked-alt me-1"></i> View on Map
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 fade-in">
+                        <div style="font-size: 3rem; color: var(--primary-color);">
+                            <i class="fas fa-hotel"></i>
+                        </div>
+                        <h3 class="mt-3">Search for Hotels</h3>
+                        <p class="text-muted">Enter your destination and budget to get personalized hotel recommendations.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if recommendations %}
+    <section class="section" style="background-color: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">Explore the Destination</h2>
+            
+            <div class="map-container" id="map"></div>
+            <div class="map-controls">
+                <button id="toggle-map-view" class="btn btn-secondary mb-2">
+                    <i class="fas fa-globe me-1"></i> Toggle Map View
+                </button>
+                <p class="small text-muted">Using OpenStreetMap via Leaflet</p>
+            </div>
+            
+            <div class="text-center mb-3">
+                <button id="find-nearby-hotels" class="btn btn-primary me-2">
+                    <i class="fas fa-hotel me-1"></i> Show Hotels Nearby
+                </button>
+                <a href="{{ url_for('car_rentals') }}?location={{ form.destination.data|urlencode }}" class="btn btn-secondary">
+                    <i class="fas fa-car me-1"></i> Find Car Rentals
+                </a>
+            </div>
+        </div>
+    </section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+{% if recommendations %}
+    <!-- Google Maps option (commented out) -->
+    <!-- <script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script> -->
+    <!-- <script src="{{ url_for('static', filename='js/maps.js') }}"></script> -->
+    
+    <!-- Leaflet Maps option (active) -->
+    <script src="{{ url_for('static', filename='js/leaflet_maps.js') }}"></script>
+    <script>
+        // Pass hotel data to the map
+        document.addEventListener('DOMContentLoaded', function() {
+            const recommendations = {{ recommendations|tojson }};
+            if (recommendations && recommendations.length > 0) {
+                // Store the data for the Leaflet map
+                window.hotelData = recommendations;
+                
+                // Store the destination for map center
+                window.destination = "{{ form.destination.data }}";
+                
+                // Initialize the Leaflet map
+                initLeafletMap();
+                
+                // Initialize toggle map view button
+                const toggleMapBtn = document.getElementById('toggle-map-view');
+                if (toggleMapBtn) {
+                    toggleMapBtn.addEventListener('click', function() {
+                        const mapView = document.getElementById('map');
+                        if (mapView.style.display === 'none') {
+                            mapView.style.display = 'block';
+                            // Refresh the map since it may not render correctly when hidden
+                            if (window.map) {
+                                window.map.invalidateSize();
+                            }
+                        } else {
+                            mapView.style.display = 'none';
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+{% endif %}
+{% endblock %}
